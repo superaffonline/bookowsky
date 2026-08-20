@@ -16,6 +16,8 @@ import { BookCard } from "@/components/book-card";
 import { Logo } from "@/components/logo";
 import { SiteHeader } from "@/components/site-header";
 
+export const dynamic = "force-dynamic";
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
@@ -30,7 +32,20 @@ const jsonLd = {
 };
 
 export default async function Home() {
-  const featured = await bookService.search({ page: 1 });
+  let featured;
+
+try {
+  featured = await bookService.search({ page: 1 });
+} catch (error) {
+  console.error("Unable to load featured books", error);
+
+  featured = {
+    count: 0,
+    nextPage: null,
+    previousPage: null,
+    books: [],
+  };
+}
   return (
     <main>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
