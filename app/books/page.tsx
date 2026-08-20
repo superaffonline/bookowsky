@@ -3,6 +3,8 @@ import { CatalogExplorer } from "@/components/catalog-explorer";
 import { SiteHeader } from "@/components/site-header";
 import { bookService } from "@/lib/books/service";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Explore free books",
   description: "Discover public-domain ebooks from Project Gutenberg. Read online or download EPUB editions legally.",
@@ -10,7 +12,20 @@ export const metadata: Metadata = {
 };
 
 export default async function BooksPage() {
-  const initialCatalog = await bookService.search({ page: 1 });
+  let initialCatalog;
+
+try {
+  initialCatalog = await bookService.search({ page: 1 });
+} catch (error) {
+  console.error("Unable to load the remote book catalog", error);
+
+  initialCatalog = {
+    count: 0,
+    nextPage: null,
+    previousPage: null,
+    books: [],
+  };
+}
 
   return (
     <main>
